@@ -1,0 +1,19 @@
+#Domain:
+TowerOfHanoi
+#Environment:
+element is a peg.
+element is a disc.
+element is a hand.
+A peg can be empty.
+A hand can be empty.
+Disc is placed on a peg.
+Disc is placed on a disc.
+Disc is held on robot.
+#Action:
+define holding of an object. 
+precondition is the hand is empty. 
+effect is a disc is held on robot.
+
+
+
+

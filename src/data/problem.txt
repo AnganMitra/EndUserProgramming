@@ -1,0 +1,8 @@
+Initialization $:
+disc1 is on top of disc2.
+disc2 is on top of disc3.
+disc3 is on top of peg1.
+Goal $:
+disc1 is on top of disc2.
+disc2 is on top of disc3.
+disc3 is on top of peg3.

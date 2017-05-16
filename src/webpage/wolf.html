@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+body {margin:0;}
+
+.navbar {
+  overflow: hidden;
+  background-color: #FFF;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.navbar button {
+  float: left;
+  display: block;
+  color: #000000;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 10px;
+  
+}
+
+.main {
+  padding: 16px;
+  margin-top: 30px;
+  height: 1500px; 
+}
+p.one {
+    border-top-style: double;
+    border-color: red;
+}
+
+p.two {
+    border-top-style: double;
+    border-color: green;
+} 
+
+p.three {
+    border-top-style: double;
+    border-color: red green blue yellow;
+} 
+
+p.four {
+    border-top-style: double;
+    border-color: blue;
+} 
+
+
+</style>
+</head>
+<script>
+
+
+var types = []
+var predicates = []
+var predicate_parameters = []
+var physical_obj = []
+var physical_obj_type=[]
+var action_parameters=[]
+var domain_name = ""
+var obj_count = 0;
+var prop_count = 0;
+var action_count = 0;
+var pred_count = 0;
+var physical_obj_count = 0;
+var start_count = 0;
+var goal_count = 0;
+
+function parse_domain(){
+	domain_name = document.getElementById('domain_name').value;
+}
+
+function parse_types(){
+	var i;
+	for(i = 0; i<obj_count; i++){
+		text = (document.getElementById('obj_'+i).value);
+		if (types.indexOf(text) == -1)
+			types.push(document.getElementById('obj_'+i).value);
+
+	}
+}
+
+function predicate_input(){ 
+	//parse_domain()     
+	//parse_types()
+
+
+    document.getElementById('ahoo').disabled = true;
+    var node = document.createElement('div');        
+    node.innerHTML = '<p class="two"> Configuration Name:<input type="text" id="predicate_name_' + pred_count + '" name="predicate_name_' + pred_count + '" style="width: 300px" > ';
+    node.innerHTML += ' Deals With: ';
+	for (j = 0; j < types.length ; j++) {
+    var text = types[j];   
+    node.innerHTML += ' '+ 
+    '<input type="number" id="predicate_obj_' +pred_count +'_' + j + '" value = "0" min = "0" max = "500" >' + text + ' ';
+	}
+    node.innerHTML += '<br> Description<input type="text" id="predicate_' + pred_count + '" name="predicate_' + pred_count + '" style="width: 300px" > </p>';
+    pred_count += 1
+    document.getElementById('container').appendChild(node);    
+    
+}
+
+function parse_predicates(){
+	var i;
+	var j; 
+	var k;
+	var pred_name = ""
+	var pred_description = ""
+	for(i = 0; i < pred_count; i++){
+		pred_name = document.getElementById('predicate_name_' + i).value
+		if (pred_name == "")
+			continue;
+		predicates.push (pred_name)
+		var pred_param=[]
+		for (j = 0; j < types.length ; j++) {
+			count = document.getElementById('predicate_obj_' + i+'_' + j).value
+			if(count > 0){
+				for (k = 0; k< count; k++)
+					pred_param.push(types[j])
+			}
+		  }
+		
+		predicate_parameters.push(pred_param)
+	}	
+}
+function parse_properties(){
+	
+	var i;
+	var j; 
+	var k;
+	var pred_name = ""
+	var pred_description = ""
+	for(i = 0; i < prop_count; i++){
+		pred_name = document.getElementById('propname' + i).value
+		if (pred_name == "")
+			continue;
+		predicates.push (pred_name)
+		var pred_param=[]
+		for (j = 0; j < types.length ; j++) {
+			count = document.getElementById('obj_prop' + i+'_' + j).value
+			if(count > 0){
+				for (k = 0; k< count; k++)
+					pred_param.push(types[j])
+			}
+		}
+
+		predicate_parameters.push(pred_param)
+	}	
+}
+
+function action_input(){
+
+
+    document.getElementById('apco').disabled = true;
+	parse_predicates()
+	parse_properties()
+	var j;
+	var node = document.createElement('div'); 
+	node.innerHTML = '<p class="three"><br> Action Name: <input id="action_name_'+ action_count +'" type="text"  style="width: 300px"> '
+
+	node.innerHTML += ' Deals With: ';
+	for (j = 0; j < types.length ; j++) {
+    var text = types[j];   
+    node.innerHTML += ' '+ 
+    '<input type="number" id="action_obj_' +action_count +'_' + j + '" value = "0" min = "0" max = "500" >' + text + ' ';
+	}	
+
+	node.innerHTML += '<br> Before action is performed, which of the properties of objects are true '
+	for (j = 0; j < predicates.length ; j++) {
+    var text = predicates[j];   
+    node.innerHTML += '<br>'+ text +
+    '<input type="radio" name="precondition_predicates_' +action_count +'_' + j +  '" id="precondition_predicates_' +action_count +'_' + j +'0" value =  "0">No'+
+    '<input type="radio" name="precondition_predicates_' +action_count +'_' + j +  '" id="precondition_predicates_' +action_count +'_' + j+ '1" value =  "1">Yes'+
+    '<input type="radio" name="precondition_predicates_' +action_count +'_' + j +  '" id="precondition_predicates_' +action_count +'_' + j+ '2" value =  "2">Not necessarily'+
+    ' ';
+	}
+
+	node.innerHTML += '<br> After action is performed, which of the properties of objects are true '
+	for (j = 0; j < predicates.length ; j++) {
+	var text = predicates[j];  
+    node.innerHTML += '<br>'+ text +
+    '<input type="radio" name="effect_predicates_' +action_count +'_' + j +  '" id="effect_predicates_' +action_count +'_' + j +'0" value =  "0">No'+
+    '<input type="radio" name="effect_predicates_' +action_count +'_' + j +  '" id="effect_predicates_' +action_count +'_' + j+ '1" value =  "1">Yes'+
+    '<input type="radio" name="effect_predicates_' +action_count +'_' + j +  '" id="effect_predicates_' +action_count +'_' + j+ '2" value =  "2">Not necessarily'+
+    ' ';
+	}
+	node.innerHTML+="</p>"
+	action_count += 1;
+	document.getElementById('container').appendChild(node);  
+} 
+
+var action_name=[]
+var action_precondition= []
+var action_effect = []
+
+function parse_actions(){
+	var i;
+	var j;
+	var k;
+	var text;
+	var p;
+	var c;
+	for(i = 0; i< action_count; i++){
+		
+		action_name.push(document.getElementById('action_name_'+i).value);
+		temp = "<br>"
+		v = 0
+		for(j = 0; j < types.length; j++){
+			count = document.getElementById('action_obj_' +i +'_' + j ).value;
+			for(k =0; k<count; k++){
+				temp += " ?"+String.fromCharCode(97+v)+ " ";   
+				v+=1;
+			}
+			temp += " -"+ types[i] + "<br>"
+		}
+		action_parameters.push(temp)
+
+		text = ""
+		for (j = 0; j < predicates.length ; j++) {
+			
+	    	p0 = document.getElementById('precondition_predicates_' +i +'_' + j+'0').checked;
+	    	p1 = document.getElementById('precondition_predicates_' +i +'_' + j+'1').checked;
+
+
+	    	v = 0
+			temp = "( " + predicates[j];
+			for(k = 0; k< predicate_parameters[j].length;k++)
+			{
+				//temp += "?"+String.fromCharCode(97+v)+" -"+predicate_parameters[j][k] + " ";   
+				temp += " ?"+String.fromCharCode(97+v)+ " ";   
+				v+=1;
+			}
+			temp +=")";
+
+
+
+	    	if (p0 == true)
+	    		text += "<br>( not "+ temp +")"
+	    	else if (p1 == true)
+	    		text += "<br>"+ temp 	
+
+	    	
+
+		}
+		action_precondition.push(text)
+		text = ""
+		for (j = 0; j < predicates.length ; j++) {
+			
+
+			p0 = document.getElementById('effect_predicates_' +i +'_' + j+'0').checked;
+	    	p1 = document.getElementById('effect_predicates_' +i +'_' + j+'1').checked;
+
+
+			v = 0
+			temp = "( " + predicates[j];
+			for(k = 0; k< predicate_parameters[j].length;k++)
+			{
+				//temp += "?"+String.fromCharCode(97+v)+" -"+predicate_parameters[j][k] + " ";   
+				temp += " ?"+String.fromCharCode(97+v)+ " ";  
+				v+=1;
+			}
+			temp += ")";
+
+
+
+	    	if (p0 == true)
+	    		text += "<br>( not "+ temp +")"
+	    	else if (p1 == true)
+	    		text += "<br>"+ temp 
+
+		}
+		action_effect.push(text)
+	}
+	return text;
+}
+
+function generate_document(){
+	var i;
+	var j;
+	var v;
+	var text = "(define (domain " + domain_name + ")";
+	if (types.length == 0)
+		text += "<br>(:requirements :strips )";
+	else{
+		text += "<br>(:requirements :typing :strips )";
+		text += "<br>(:types ";
+		for(j = 0; j< types.length;j++)
+		{
+			text += types[j] + " ";   
+			v+=1;
+		}
+		text += ")"
+	}
+
+
+	text += "<br>(:predicates ";
+	for(i = 0; i < predicates.length; i++){
+		v = 0,
+		text += "<br>( " + predicates[i];
+		for(j = 0; j< predicate_parameters[i].length;j++)
+		{
+			text += "?"+String.fromCharCode(97+v)+" -"+predicate_parameters[i][j] + " ";   
+			v+=1;
+		}
+		text += ")";
+	}
+	text += "<br>)";
+ 	for(i = 0; i < action_name.length; i++){
+		text += "<br>(:action ";
+		text += action_name[i];
+		text += "<br>(:parameters";
+		text += action_parameters[i];
+		text += ")";
+		text += "<br>(:precondition";
+		text += action_precondition[i];
+		text += "<br>)";
+		text += "<br>(:efffect" ;
+		text += action_effect[i];
+		text += "<br>)";
+	}
+
+	text += "<br>)";
+
+	return text;
+}
+
+function generate_pddl(){
+	parse_actions()
+	document.getElementById('aap').disabled = true;
+    var myWindow = window.open("", "PDDL Window", "width=400,height=400");
+    myWindow.document.write(generate_document())
+
+}
+function object_input(){
+	var node = document.createElement('div'); 
+
+	node.innerHTML = '<p class="four"> Object Name: <input id="obj_'+obj_count + '" type="text"  style="width: 300px"> </p>';
+	obj_count += 1;
+	document.getElementById('container').appendChild(node);  
+}
+
+function property_input(){
+
+	parse_types()
+
+	document.getElementById('ao').disabled = true;
+	
+	var node = document.createElement('div'); 
+	
+	node.innerHTML = '<p class = "two"> Property Name: <input id="propname'+prop_count + '" type="text"  style="width: 300px"> ';
+	node.innerHTML += ' Deals With: ';
+	for (j = 0; j < types.length ; j++) {
+    var text = types[j];   
+    node.innerHTML += ' '+ 
+    '<input type="number" id="obj_prop' +prop_count +'_' + j + '" value = "'+'0'+'" min = "0" max = "500" >' + text + ' ';
+	}
+	node.innerHTML += '<br> Description: <input id="propdescription'+prop_count + '" type="text"  style="width: 300px"> </p>';
+	prop_count += 1;
+	document.getElementById('container').appendChild(node);  
+}
+
+
+function object_declaration_input(){
+	document.getElementById('gc').disabled = true;
+	document.getElementById('odi').disabled = true;
+	var node = document.createElement('div'); 
+	for (j = 0; j < types.length ; j++) {
+    var text = types[j];   
+    node.innerHTML += '<br>Type of Object '+ text + 
+    '<input type="number" id="phys_obj_' + j + '" value = "0" min = "0" max = "500" >'  ;
+    node.innerHTML += '<br> Object Names(Space Separated): <input id="phys_obj_name_'+j + '" type="text"  style="width: 300px"> ';	
+	}
+	document.getElementById('container').appendChild(node);  
+
+}
+function start_input(){
+	
+	document.getElementById('odi').disabled = true;
+	var node = document.createElement('div'); 
+	if (predicates.length == 0)
+	{
+		parse_properties()
+		parse_predicates()
+	}
+	node.innerHTML = ""
+	for(j=0; j<predicates.length; j++){
+		node.innerHTML += '<br> State : '+predicates[j];
+		node.innerHTML += '<input type="radio" name="start_predicates_'  +start_count+'_'+ j +  '" id="start_predicates_' +start_count+'_'+ j +'0" value =  "0">No'+
+    	'<input type="radio" name="start_predicates_'  +start_count+'_'+ j +  '" id="start_predicates_' +start_count+'_'+ j+ '1" value =  "1">Yes'+
+    	'<input type="radio" name="start_predicates_' +start_count+'_'+ j +  '" id="start_predicates_' + start_count+'_'+ j+ '2" value =  "2">Not necessarily'
+    	
+		node.innerHTML += '<br> Object Involved(Space Separated): <input id="start_obj_name_'+start_count+'_'+j + '" type="text"  style="width: 300px"> ';	
+	
+	}
+	start_count += 1
+	document.getElementById('container').appendChild(node);  
+}
+
+function goal_input(){
+	parse_start()
+
+	document.getElementById('si').disabled = true;
+	var node = document.createElement('div'); 
+	node.innerHTML = ""
+	for(j=0; j<predicates.length; j++){
+		node.innerHTML += '<br> State : '+predicates[j];
+		node.innerHTML += '<input type="radio" name="goal_predicates_'  +goal_count+'_' + j +  '" id="goal_predicates_' +goal_count+'_'+ j +'0" value =  "0">No'+
+    	'<input type="radio" name="goal_predicates_' +goal_count+'_'+ j +  '" id="goal_predicates_' +goal_count+'_' + j+ '1" value =  "1">Yes'+
+    	'<input type="radio" name="goal_predicates_' +goal_count+'_'+ j +  '" id="goal_predicates_' +goal_count+'_' + j+ '2" value =  "2">Not necessarily'
+
+		node.innerHTML += '<br> Object Involved(Space Separated): <input id="goal_obj_name_'+goal_count+'_'+j + '" type="text"  style="width: 300px"> ';	
+	
+	}
+	goal_count += 1;
+	document.getElementById('container').appendChild(node);  
+
+}
+function parse_object_declaration(){
+
+
+	for (j = 0; j < types.length ; j++) {
+    var text = types[j];   
+    count = document.getElementById('phys_obj_' + j ).value;
+    elements = document.getElementById('phys_obj_name_'+j).value.split(" ");
+    if(count != elements.length)
+    	return;
+
+	for(i = 0; i<elements.length; i++)
+	{	
+		physical_obj.push(elements[i]);
+	    physical_obj_type.push(types[j]);
+	}
+    
+
+	}
+	
+}
+function parse_start(){
+	text = "<br>(:INIT "
+	for(i= 0; i< start_count; i++){
+		for(j=0; j<predicates.length; j++){
+			
+			elements = document.getElementById('start_obj_name_'+i+'_'+j ).value.split(" ");
+			temp = "";
+			for(k=0; k< elements.length; k++){
+				if (physical_obj.indexOf(elements[k])!= -1)
+					temp += ' '+ elements[k];
+				else console.log("Element not found");
+			}
+
+			if(document.getElementById('start_predicates_'+i+'_'+j+'0').checked)
+				text += '<br>( not (' + predicates[j] + temp + ')';
+			else if (document.getElementById('start_predicates_'+i+'_'+j+'1').checked)
+				text += '<br>( ' + predicates[j] + temp ;
+			
+			text+=' )'
+		}
+		text += " )"
+	}
+	return text
+}
+function parse_goal(){
+	text = parse_start() + "<br> (:GOAL "
+	for(i= 0; i< start_count; i++){
+		for(j=0; j<predicates.length; j++){
+			
+			elements = document.getElementById('goal_obj_name_'+i+'_'+j ).value.split(" ");
+			temp ="";
+			for(k=0; k< elements.length; k++){
+				if (physical_obj.indexOf(elements[k])!= -1)
+					temp += ' '+ elements[k];
+				else console.log("Element not found");
+			}
+
+			if(document.getElementById('goal_predicates_'+i+'_'+j+'0').checked)
+				text += '<br>( not (' + predicates[j] + temp + ')';
+			else if (document.getElementById('goal_predicates_'+i+'_'+j+'1').checked)
+				text += '<br>( ' + predicates[j] + temp ;
+
+			text+=' )'
+		}
+		text += ' )'
+	}
+	return text
+}
+function write_start_goal(start_goal_config){
+
+	var myWindow = window.open("", "Problem Window", "width=400,height=400");
+	header_str ='(define (problem 001) <br> (:domain '+ domain_name + ' )';
+	obj_str ="<br>(:OBJECTS ";
+	parse_object_declaration()
+	for (i = 0; i< physical_obj.length; i++){
+		obj_str +='<br> ' + physical_obj[i] + ' - '+physical_obj_type[i]+ ' ';
+	}
+	obj_str += ' )';
+    myWindow.document.write(header_str+obj_str+start_goal_config+' )');
+}
+function generate_problem(){
+
+	document.getElementById('gi').disabled = true;
+	text = parse_goal()
+	write_start_goal(text)
+}
+</script>
+
+<body>
+
+<div class="navbar" >
+
+    <button id ="ao" onClick="object_input()" > Add object</button>
+	<button id ="ahoo"   onClick="property_input()"  > Add Properties of Objects </button>
+	<button id= "apco"  onClick="predicate_input()"  > Add Possible configuration of Objects</button>
+	<button id= "aap"  onClick="action_input()" > Add Actions Possible</button>
+	<button id= "gc" onClick="generate_pddl()" > Generate Code</button>
+	<button id= "odi"  onClick="object_declaration_input()" > Object Declaration</button>
+	<button id= "si"  onClick="start_input()" > Starting State</button>
+	<button id= "gi"  onClick="goal_input()" > Goal State</button>
+	<button id= "gp"  onClick="generate_problem()" > Generate Problem Code</button>
+</div>
+<div class="main" id="container">
+<p class="one">
+System name: 
+<input id="domain_name" type="text"  style="width: 300px" >
+</p>
+</div>
+
+
+</body>
+</html>

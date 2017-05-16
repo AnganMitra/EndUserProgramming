@@ -1,0 +1,15 @@
+NLP tools as NLTK SyntaxNet and Louis
+
+Obswerve program by demonstration
+
+And mix the two
+
+Pepper 
+Baxter
+
+User interface for control and program
+How to abstract knowledge from program by demonstration
+
+When a robot misbehaves, if this abstract information is shown, the user can know better.
+
+Finite State Machines
